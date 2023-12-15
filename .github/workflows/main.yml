@@ -20,11 +20,14 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - run: |
-          dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
-      - run: |
-          dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild"
-      - run: |
-          dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current"
-      - run: |
-          dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin"
+      - name: Install the dependencies
+        run: npm ci
+      - name: Build the native modules
+        run: npm run rebuild
+      - name: Build the app
+        run: npm run build
+      - name: Upload the build
+        uses: actions/upload-artifact@4
+        with:
+          name: build
+          path: release/
