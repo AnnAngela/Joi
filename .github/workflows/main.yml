@@ -49,9 +49,15 @@ jobs:
         run: npm run rebuild
       - name: Build the app
         run: npm run build
-      - run: dir release/0.5.12
+      - name: Get the version
+        id: appVersion
+        shell: bash
+        run: echo "appVersion=$(jq .version package.json)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+      - name: Show the result
+        shell: bash
+        run: tree -ah release/
       - name: Upload the build
         uses: actions/upload-artifact@v4
         with:
-          name: build
-          path: release/
+          name: Joi-Windows-${{ steps.appVersion.outputs.appVersion }}-Setup.exe
+          path: release/${{ steps.appVersion.outputs.appVersion }}/Joi-Windows-${{ steps.appVersion.outputs.appVersion }}-Setup.exe
