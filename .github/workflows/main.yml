@@ -29,6 +29,7 @@ jobs:
         run: npm run rebuild
       - name: Build the app
         run: npm run build
+      - run: dir release/
       - name: Upload the build
         uses: actions/upload-artifact@v4
         with:
