@@ -54,8 +54,7 @@ jobs:
         shell: bash
         run: echo "appVersion=$(jq .version package.json)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       - name: Show the result
-        shell: bash
-        run: tree -ah release/
+        run: Get-ChildItem -Path release/ -Recurse -Force
       - name: Upload the build
         uses: actions/upload-artifact@v4
         with:
