@@ -23,6 +23,8 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
+
+      # npm ci 的支持缓存版本，减少在本就性能不佳的 windows runner 上的编译时间
       - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
         id: version
         shell: bash
@@ -30,29 +32,31 @@ jobs:
           export LC_ALL=en_US.UTF-8
           export LANG=en_US.UTF-8
           echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
-      - uses: actions/cache/restore@v3
-        name: Try to restore node_modules from cache
+      - name: Try to restore node_modules from cache
         id: cache
+        uses: actions/cache/restore@v3
         with:
           path: node_modules
           key: ${{ steps.version.outputs.hash }}
       - name: Install dependencies if no cache for node_modules
         run: npm ci
         if: success() && steps.cache.outputs.cache-hit != 'true'
-      - uses: actions/cache/save@v3
+      - name: Save node_modules to cache
+        uses: actions/cache/save@v3
         if: success() && steps.cache.outputs.cache-hit != 'true'
-        name: Save node_modules to cache
         with:
           path: node_modules
           key: ${{ steps.version.outputs.hash }}
+
       - name: Build the native modules
         run: npm run rebuild
       - name: Build the app
         run: npm run build
+
       - name: Get the version
         id: appVersion
         shell: bash
-        run: echo "appVersion=$(jq .version package.json)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+        run: echo "appVersion=$(jq -r .version package.json)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       - name: Show the result
         run: Get-ChildItem -Path release/ -Recurse -Force
       - name: Upload the build
