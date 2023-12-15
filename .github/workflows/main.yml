@@ -64,3 +64,4 @@ jobs:
         with:
           name: Joi-Windows-${{ steps.appVersion.outputs.appVersion }}-Setup.exe
           path: release/${{ steps.appVersion.outputs.appVersion }}/Joi-Windows-${{ steps.appVersion.outputs.appVersion }}-Setup.exe
+          compression-level: 0
