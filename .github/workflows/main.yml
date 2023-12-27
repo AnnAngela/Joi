@@ -25,8 +25,11 @@ jobs:
           cache: npm
 
       # npm ci 的支持缓存版本，减少在本就性能不佳的 windows runner 上的编译时间
-      - name: Installing the dependencies
-        uses: AnnAngela/cached_node-modules@v1
+      - id: get-patches-commit-short
+        run: echo "commit=$(git log -1 --format="%H" -- patches)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+      - uses: AnnAngela/cached_node-modules@v1
+        with:
+          customVariable: :patches@{steps.get-patches-commit-short.outputs.commit}
 
       - name: Build the native modules
         run: npm run rebuild
