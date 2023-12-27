@@ -26,6 +26,7 @@ jobs:
 
       # npm ci 的支持缓存版本，减少在本就性能不佳的 windows runner 上的编译时间
       - id: get-patches-commit-short
+        shell: bash
         run: echo "commit=$(git log -1 --format="%H" -- patches)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       - uses: AnnAngela/cached_node-modules@v1
         with:
